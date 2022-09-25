@@ -1,0 +1,60 @@
+# -------------------------------------------------AccommodationServices---------------------------------------------------------------------------------
+import datetime
+from fastapi import HTTPException, status
+
+from models.account import Account
+
+class AccountService():
+
+    COUNTER = 3
+
+    async def create_account(self, schema, current_user, db):
+        data = schema.dict()
+        if current_user.account != []:
+            if len(current_user.account) < AccountService.COUNTER:
+                for user in current_user.account:
+                    if user.nickname == data['nickname']:
+                        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='nickname already exists')
+            else: 
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='limit accounts')
+        data['user_id'] = current_user.id
+        data['created_at'] = datetime.datetime.utcnow()
+        account = Account(**data)
+        db.add(account)
+        db.commit()
+        db.refresh(account)
+        return account
+
+    async def get_account(self, db, nickname, current_user):
+        account = db.query(Account).filter_by(user_id=current_user.id, nickname=nickname).first()
+        return account
+
+    async def update_account(self, db, nickname, current_user, schema):
+        data = schema.dict()
+        account = await self.get_account(db, nickname, current_user)
+        for key, value in data.items():
+            setattr(account, key, value)
+        account.updated_at = datetime.datetime.utcnow()
+        db.commit()
+        db.refresh(account)
+        return account
+
+    async def delete_account(self, db, nickname, current_user):
+        specify_account = db.query(Account).filter_by(user_id=current_user.id, nickname=nickname).first()
+        db.delete(specify_account)
+        db.commit()
+        raise HTTPException(status_code=status.HTTP_200_OK, detail=f'{nickname} account was deleted successfully')
+
+
+    async def get_all_accounts(self, current_user):
+
+        account = [{'nickname': data.nickname,
+                    'avatar': data.avatar,
+                    'description': data.description} 
+                    for data in current_user.account]
+
+        return account
+
+
+account_services = AccountService()
+
