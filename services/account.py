@@ -1,4 +1,4 @@
-# -------------------------------------------------AccommodationServices---------------------------------------------------------------------------------
+# -------------------------------------------------AccountServices---------------------------------------------------------------------------------
 import datetime
 from fastapi import HTTPException, status
 
@@ -25,13 +25,16 @@ class AccountService():
         db.refresh(account)
         return account
 
-    async def get_account(self, db, nickname, current_user):
+
+    async def get_account(self, db, session_data, current_user):
+        nickname = await self.current_nickname(session_data)
         account = db.query(Account).filter_by(user_id=current_user.id, nickname=nickname).first()
         return account
 
-    async def update_account(self, db, nickname, current_user, schema):
+
+    async def update_account(self, db, session_data, current_user, schema):
         data = schema.dict()
-        account = await self.get_account(db, nickname, current_user)
+        account = await self.get_account(db, session_data, current_user)
         for key, value in data.items():
             setattr(account, key, value)
         account.updated_at = datetime.datetime.utcnow()
@@ -39,8 +42,9 @@ class AccountService():
         db.refresh(account)
         return account
 
-    async def delete_account(self, db, nickname, current_user):
-        specify_account = db.query(Account).filter_by(user_id=current_user.id, nickname=nickname).first()
+    async def delete_account(self, db, session_data, current_user):
+        specify_account = await self.get_account(db, session_data, current_user)
+        nickname = await self.current_nickname(session_data)
         db.delete(specify_account)
         db.commit()
         raise HTTPException(status_code=status.HTTP_200_OK, detail=f'{nickname} account was deleted successfully')
@@ -55,6 +59,11 @@ class AccountService():
 
         return account
 
+    @staticmethod
+    async def current_nickname(session_data):
+        data = session_data.dict()
+        nickname = data['nickname']
+        return nickname
+
 
 account_services = AccountService()
-

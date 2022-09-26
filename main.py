@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 
-from endpoints import token, me, account
+from endpoints import token, me, account, post, session
 
 from database.db import Base, engine
 
@@ -13,6 +13,8 @@ app = FastAPI(
 app.include_router(token.router, prefix='/api/v1', tags=["Token"])
 app.include_router(me.router, prefix='/api/v1', tags=["User"])
 app.include_router(account.router, prefix='/api/v1', tags=["Account"])
+app.include_router(post.router, prefix='/api/v1', tags=["Post"])
+app.include_router(session.router, prefix='/api/v1', tags=["Session"])
 
 
 

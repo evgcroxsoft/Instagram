@@ -1,4 +1,5 @@
 # -------------------------------------------------UserServices---------------------------------------------------------------------------------
+
 import datetime
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
@@ -73,7 +74,7 @@ class UserService():
         if user is None:
             raise credentials_exception
         return user
-
+    
     async def get_current_is_active_user(db: Session = Depends(get_db), current_user: UserRetrieveScheme = Depends(get_current_user)):
         if current_user.is_active == False:
             raise HTTPException(status_code=400, detail="Inactive user")

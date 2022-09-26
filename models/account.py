@@ -21,3 +21,5 @@ class Account(DataBase):
     subscriber_id = Column(Integer, ForeignKey(Subscriber.id))
     subscribed_id = Column(Integer, ForeignKey(Subscribed.id))
 
+    post = relationship('Post', backref='accounts', cascade='all, delete')
+
