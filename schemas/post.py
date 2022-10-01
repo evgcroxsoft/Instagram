@@ -3,10 +3,10 @@
 from datetime import date
 from pydantic import BaseModel
 
-from models.enum import StatusType
+from models.enum import PostStatus
 
 class PostBaseScheme(BaseModel):
-    status: StatusType
+    status: PostStatus
     description: str | None = None
     media: list
 

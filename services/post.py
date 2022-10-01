@@ -1,10 +1,15 @@
 # -------------------------------------------------PostServices---------------------------------------------------------------------------------
 
-import datetime
+from datetime import datetime
+from http.client import OK
 from fastapi import HTTPException, status
 
 from models.post import Post
 from .account import account_services
+from models.enum import SubcribeStatus
+from models.subscribe import Subscribe
+from models.like import Like
+from models.enum import LikeStatus
 
 
 class PostService():
@@ -21,7 +26,7 @@ class PostService():
         return post
 
 
-    async def get_all_posts(self, session_data, db, status):
+    async def get_all_my_posts(self, session_data, db, status):
 
         nickname = await account_services.current_nickname(session_data)
         posts = db.query(Post).filter_by(account_nickname = nickname).all()
@@ -63,12 +68,29 @@ class PostService():
     async def update_post(self, db, session_data, schema, id):
         data = schema.dict()
         nickname = await account_services.current_nickname(session_data)
-        specify_post = db.query(Post).filter_by(account_nickname = nickname, id=id).first()
+        specify_post = db.query(Post).filter_by(account_nickname=nickname, id=id).first()
         for key, value in data.items():
             setattr(specify_post, key, value)
-        specify_post.updated_at = datetime.datetime.utcnow()
+        specify_post.updated_at = datetime.utcnow()
         db.commit()
         db.refresh(specify_post)
         return specify_post
+
+
+    async def get_all_posts(self, session_data, db):
+
+        me = await account_services.current_nickname(session_data)
+        subscribers = db.query(Subscribe).filter_by(account_nickname=me, status=SubcribeStatus.OK).all()
+        all_posts = [db.query(Post).filter_by(account_nickname=post.subscriber).all() for post in subscribers]
+        result = [{
+                    'id': post.id, 
+                    'description': post.description, 
+                    'media:': post.media, 
+                    'likes': db.query(Like).filter_by(post_id=post.id, status=LikeStatus.LIKE).count(), 
+                    'dislikes': db.query(Like).filter_by(post_id=post.id, status=LikeStatus.DISLIKE).count()
+                    } for posts in all_posts for post in posts]
+        result = f'total: {len(result)}', result
+        return result
+
 
 post_services = PostService()

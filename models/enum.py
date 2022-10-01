@@ -2,13 +2,25 @@
 
 from enum import Enum
 
-
-class AccessType(Enum):
+#for account
+class AccountStatus(Enum):
     LIMITED = 'limited'
     FULL = 'full'
 
 
-class StatusType(Enum):
+class PostStatus(Enum):
     VISIBLE = 'visible'
-    UNVISIBLE = 'unvisible'
+    INVISIBLE = 'invisible'
     ARCHIVED = 'archived'
+
+
+class SubcribeStatus(Enum):
+    NEW = 'new'
+    OK = 'ok'
+    DECLINED = 'declined'
+
+
+class LikeStatus(Enum):
+    LIKE = 'like'
+    DISLIKE = 'dislike'
+

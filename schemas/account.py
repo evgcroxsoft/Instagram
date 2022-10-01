@@ -3,13 +3,13 @@
 from datetime import date
 from pydantic import BaseModel
 
-from models.enum import AccessType
+from models.enum import AccountStatus
 
 class AccountBaseScheme(BaseModel):
     nickname: str 
     avatar: str | None = None
     description: str
-    access_type: AccessType
+    status: AccountStatus
 
     class Config:
         orm_mode = True
