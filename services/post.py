@@ -1,7 +1,6 @@
 # -------------------------------------------------PostServices---------------------------------------------------------------------------------
 
 from datetime import datetime
-from http.client import OK
 from fastapi import HTTPException, status
 
 from models.post import Post
