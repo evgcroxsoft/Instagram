@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 
 from models.post import Post
 from .account import account_services
-from models.enum import SubcribeStatus
+from models.enum import PostStatus, SubcribeStatus
 from models.subscribe import Subscribe
 from models.like import Like
 from models.enum import LikeStatus
@@ -81,7 +81,7 @@ class PostService():
 
         me = await account_services.current_nickname(session_data)
         subscribers = db.query(Subscribe).filter_by(account_nickname=me, status=SubcribeStatus.OK).all()
-        all_posts = [db.query(Post).filter_by(account_nickname=post.subscriber).all() for post in subscribers]
+        all_posts = [db.query(Post).filter_by(account_nickname=post.subscriber, status=PostStatus.VISIBLE).all() for post in subscribers]
         result = [{
                     'id': post.id, 
                     'description': post.description, 
