@@ -16,3 +16,5 @@ fastapi-versioning
 requests
 python-multipart
 fastapi-sessions
+fastapi-pagination[all]
+uvicorn[standard]

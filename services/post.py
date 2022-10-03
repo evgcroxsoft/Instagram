@@ -9,6 +9,7 @@ from models.enum import PostStatus, SubcribeStatus
 from models.subscribe import Subscribe
 from models.like import Like
 from models.enum import LikeStatus
+from schemas.post import PostPaginationScheme
 
 
 class PostService():
@@ -30,14 +31,13 @@ class PostService():
         nickname = await account_services.current_nickname(session_data)
         posts = db.query(Post).filter_by(account_nickname = nickname).all()
 
-        post = [{
+        result = [{
                 'id': post.id,
                 'description': post.description,
                 'media': post.media,
                 'status': post.status,
                 'created_at': post.created_at}
                 for post in posts if post.status == status or status is None]
-        result = f'total: {len(post)}', post
         return result
 
     async def get_post(self, session_data, db, id):
@@ -75,20 +75,21 @@ class PostService():
         db.refresh(specify_post)
         return specify_post
 
-
     async def get_all_posts(self, session_data, db):
 
         me = await account_services.current_nickname(session_data)
         subscribers = db.query(Subscribe).filter_by(account_nickname=me, status=SubcribeStatus.OK).all()
-        all_posts = [db.query(Post).filter_by(account_nickname=post.subscriber, status=PostStatus.VISIBLE).all() for post in subscribers]
-        result = [{
-                    'id': post.id, 
-                    'description': post.description, 
-                    'media:': post.media, 
-                    'likes': db.query(Like).filter_by(post_id=post.id, status=LikeStatus.LIKE).count(), 
-                    'dislikes': db.query(Like).filter_by(post_id=post.id, status=LikeStatus.DISLIKE).count()
-                    } for posts in all_posts for post in posts]
-        result = f'total: {len(result)}', result
+        all_posts = [db.query(Post).filter_by(
+                                                account_nickname=post.subscriber, 
+                                                status=PostStatus.VISIBLE).order_by(Post.created_at.desc(), Post.updated_at.desc()).all() 
+                                                for post in subscribers]
+        result = [PostPaginationScheme(
+                                        id = post.id, 
+                                        description = post.description, 
+                                        media = post.media, 
+                                        likes = db.query(Like).filter_by(post_id=post.id, status=LikeStatus.LIKE).count(), 
+                                        dislikes = db.query(Like).filter_by(post_id=post.id, status=LikeStatus.DISLIKE).count()
+                                        ) for posts in all_posts for post in posts]
         return result
 
 

@@ -21,3 +21,14 @@ class PostRetrieveScheme(PostBaseScheme):
 
     class Config:
         orm_mode = True
+
+
+class PostPaginationScheme(BaseModel):
+    id: int
+    description: str
+    media: list
+    likes: int
+    dislikes: int
+
+    class Config:
+        orm_mode = True

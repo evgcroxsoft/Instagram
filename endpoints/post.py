@@ -11,6 +11,7 @@ from schemas.session import SessionData
 from security.session import cookie, verifier
 from services.post import post_services
 from services.user import user_services
+from fastapi_pagination import Params, paginate
 
 router = APIRouter()
 
@@ -26,11 +27,13 @@ async def create_post(  schema: PostBaseScheme,
 
 
 @router.get('/post', status_code=status.HTTP_200_OK, dependencies=[Depends(cookie)])
-async def get_all_my_posts(status: PostStatus | None = None, 
+async def get_all_my_posts(
+                        params: Params = Depends(),
+                        status: PostStatus | None = None, 
                         current_user: UserRetrieveScheme = Depends(user_services.get_current_is_active_user),
                         session_data: SessionData = Depends(verifier),
                         db: Session = Depends(get_db)):
-    return await post_services.get_all_my_posts(session_data, db, status)
+    return paginate(await post_services.get_all_my_posts(session_data, db, status), params)
 
 
 @router.get('/post/{id}', status_code=status.HTTP_200_OK, dependencies=[Depends(cookie)])
