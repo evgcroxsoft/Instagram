@@ -1,8 +1,7 @@
-fastapi == 0.79.0
+fastapi
 asyncpg == 0.26.0 
 databases
-greenlet == 1.1.2 
-uvicorn  == 0.18.2
+greenlet == 1.1.2
 sqlalchemy == 1.4.39
 psycopg2-binary == 2.9.3
 databases == 0.6.1
@@ -16,5 +15,6 @@ fastapi-versioning
 requests
 python-multipart
 fastapi-sessions
-fastapi-pagination[all]
+fastapi-pagination
 uvicorn[standard]
+pywebio

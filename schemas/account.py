@@ -1,12 +1,14 @@
-#________________________________________________________ACCOUNT SCHEMAS__________________________________________________________________________________
+# ________________________________________________________ACCOUNT SCHEMAS__________________________________________________________________________________
 
 from datetime import date
+
 from pydantic import BaseModel
 
 from models.enum import AccountStatus
 
+
 class AccountBaseScheme(BaseModel):
-    nickname: str 
+    nickname: str
     avatar: str | None = None
     description: str
     status: AccountStatus
@@ -20,6 +22,7 @@ class AccountUpdateScheme(AccountBaseScheme):
 
     class Config:
         orm_mode = True
+
 
 class AccountRetrieveScheme(AccountBaseScheme):
     created_at: date
