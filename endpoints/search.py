@@ -24,4 +24,4 @@ async def searching(
     session_data: SessionData = Depends(verifier),
     db: Session = Depends(get_db),
 ):
-    return await account_services.get_account_with_post(nickname, nickname, db)
+    return await account_services.get_account_with_post(nickname, db)
