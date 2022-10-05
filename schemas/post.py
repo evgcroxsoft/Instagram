@@ -1,9 +1,11 @@
-#________________________________________________________POST SCHEMAS__________________________________________________________________________________
+# ________________________________________________________POST SCHEMAS__________________________________________________________________________________
 
 from datetime import date
+
 from pydantic import BaseModel
 
 from models.enum import PostStatus
+
 
 class PostBaseScheme(BaseModel):
     status: PostStatus

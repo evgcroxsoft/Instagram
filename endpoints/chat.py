@@ -10,9 +10,6 @@ from schemas.session import SessionData
 from security.session import cookie, verifier
 from services.account import account_services
 
-# from pywebio.exceptions import SessionClosedException
-
-
 router = APIRouter()
 
 chat_msgs = []
@@ -77,17 +74,7 @@ async def chat(session_data: SessionData = Depends(verifier)):
                 if m[0] != nickname:  # if not a message from current user
                     msg_box.append(put_markdown(f"`{m[0]}`: {m[1]}"))
 
-            # # remove expired
-            # if len(chat_msgs) > MAX_MESSAGES_COUNT:
-            #     chat_msgs = chat_msgs[len(chat_msgs) // 2:]
-
-            # last_idx = len(chat_msgs)
-
     await main()
-
-    # try:
-    # await main()
-    # except (SessionClosedException):
 
 
 if __name__ == "__main__":

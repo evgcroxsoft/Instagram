@@ -1,41 +1,35 @@
 import os
 
 
-def shell_source(script):
-    """Sometime you want to emulate the action of "source" in bash,
-    settings some environment variables. Here is a way to do it."""
-    import os
-    import subprocess
+# singletone pattern
+class Connector:
 
-    pipe = subprocess.Popen(". %s; env" % script, stdout=subprocess.PIPE, shell=True)
-    output = pipe.communicate()[0]
-    env = dict((line.split("=", 1) for line in output.splitlines()))
-    os.environ.update(env)
+    __instance = None
+    __user = os.environ.get("POSTGRES_USER")
+    __password = os.environ.get("POSTGRES_PASSWORD")
+    __url = os.environ.get("POSTGRES_URL")
+    __db = os.environ.get("POSTGRES_DB")
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.__user or not cls.__password or not cls.__url or not cls.__db:
+            raise Exception(
+                "Please in environment check credentials (user, password, url, db)!"
+            )
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def __del__(self):
+        Connector.__instance is None
+
+    def __init__(self):
+        self.POSTGRES_USER = self.__user
+        self.POSTGRES_PASSWORD = self.__password
+        self.POSTGRES_URL = self.__url
+        self.POSTGRES_DB = self.__db
+
+    def create_path(self):
+        return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_URL}/{self.POSTGRES_DB}"
 
 
-class PostgreConnector:
-    def __init__(self, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_URL, POSTGRES_DB):
-        self.POSTGRES_USER = POSTGRES_USER
-        self.POSTGRES_PASSWORD = POSTGRES_PASSWORD
-        self.POSTGRES_URL = POSTGRES_URL
-        self.POSTGRES_DB = POSTGRES_DB
-
-    def get_env_variable(name):
-        env_var = os.environ.get(name)
-        if not env_var:
-            raise Exception(f"Expected environment variable {name} not set.")
-        return env_var
-
-    def path_to_PostgreSQL():
-        """Create path to POSGRESQL BD"""
-        return f"postgresql+psycopg2://{credentials.POSTGRES_USER}:{credentials.POSTGRES_PASSWORD}@{credentials.POSTGRES_URL}/{credentials.POSTGRES_DB}"
-
-
-credentials = PostgreConnector(
-    POSTGRES_USER=PostgreConnector.get_env_variable("POSTGRES_USER"),
-    POSTGRES_PASSWORD=PostgreConnector.get_env_variable("POSTGRES_PASSWORD"),
-    POSTGRES_URL=PostgreConnector.get_env_variable("POSTGRES_URL"),
-    POSTGRES_DB=PostgreConnector.get_env_variable("POSTGRES_DB"),
-)
-
-DB_path = PostgreConnector.path_to_PostgreSQL()
+DB_path = Connector().create_path()

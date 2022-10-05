@@ -1,12 +1,13 @@
 # ________________________________________________________SECURITY__________________________________________________________________________________
 from base64 import b64encode
 from datetime import datetime, timedelta
-from jose import jwt
-from fastapi.security import OAuth2PasswordBearer
-from passlib.context import CryptContext
 from secrets import token_bytes
 
 from fastapi import APIRouter
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from passlib.context import CryptContext
+
 router = APIRouter()
 
 # -------------------------------------------------Hashing and Verify Password---------------------------------------------------------------------------------

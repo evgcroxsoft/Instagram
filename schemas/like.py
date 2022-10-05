@@ -1,9 +1,11 @@
-#________________________________________________________LIKE SCHEMAS__________________________________________________________________________________
+# ________________________________________________________LIKE SCHEMAS__________________________________________________________________________________
 
 from datetime import date
+
 from pydantic import BaseModel
 
 from models.enum import LikeStatus
+
 
 class LikeBaseScheme(BaseModel):
     status: LikeStatus
