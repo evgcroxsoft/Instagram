@@ -21,7 +21,7 @@
 
 ***
 
-## **Create file .env and past there:**
+## **Create file .env and put there:**
 > export POSTGRES_URL=postgres
 
 >export POSTGRES_USER=admin
