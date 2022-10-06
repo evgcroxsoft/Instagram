@@ -17,15 +17,15 @@ services:
     ports:
       - 5432:5432
     restart: unless-stopped
-  instagram:
-    build: .
-    container_name: python
-    volumes:
-      - application_data:/home/python/TeachMeSkills/Instagram
-    env_file:
-      - .env
-    ports:
-      - 8000:8000
-    depends_on:
-      - postgres
-    restart: unless-stopped
+  # instagram:
+  #   build: .
+  #   container_name: python
+  #   volumes:
+  #     - application_data:/home/python/TeachMeSkills/Instagram
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 8000:8000
+  #   depends_on:
+  #     - postgres
+  #   restart: unless-stopped

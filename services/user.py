@@ -19,7 +19,7 @@ from security.security import (
 
 
 class UserService:
-    def check_user(self, db, email):
+    async def check_user(self, db, email):
         if db.query(User).filter_by(email=email).first():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Host already exists"
@@ -27,7 +27,7 @@ class UserService:
 
     async def create_user(self, db, schema):
         data = schema.dict()
-        self.check_user(db, data["email"])
+        await self.check_user(db, data["email"])
         data["hashed_password"] = await get_password_hash(
             schema.dict()["hashed_password"]
         )
