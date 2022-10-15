@@ -1,6 +1,7 @@
 # -------------------------------------------------UserServices---------------------------------------------------------------------------------
 
 import datetime
+import uuid
 
 from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
@@ -31,6 +32,7 @@ class UserService:
         data["hashed_password"] = await get_password_hash(
             schema.dict()["hashed_password"]
         )
+        data["id"] = uuid.uuid4()
         data["created_at"] = datetime.datetime.utcnow()
         user = User(**data)
         db.add(user)
